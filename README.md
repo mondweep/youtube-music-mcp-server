@@ -1,5 +1,7 @@
 # YouTube Music MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@mondweep/youtube-music-mcp-server)](https://smithery.ai/server/@mondweep/youtube-music-mcp-server)
+
 ## Overview
 This project implements a Model Context Protocol (MCP) server that enables AI models to control YouTube Music playback through Google Chrome. It bridges the gap between AI assistants and music playback, allowing AI to search for and play songs based on song names and artist names.
 
@@ -71,19 +73,12 @@ npm run watch
 
 ## Installation
 
-To use with Claude Desktop, add the server config:
+### Installing via Smithery
 
-On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+To install YouTube Music Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@mondweep/youtube-music-mcp-server):
 
-```json
-{
-  "mcpServers": {
-    "youtube-music-server": {
-      "command": "/path/to/youtube-music-server/build/index.js"
-    }
-  }
-}
+```bash
+npx -y @smithery/cli install @mondweep/youtube-music-mcp-server --client claude
 ```
 
 ### Debugging
