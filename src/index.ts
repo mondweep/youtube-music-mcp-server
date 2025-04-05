@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { exec, ExecException } from 'child_process';
 import { z } from 'zod';
+import os from 'os';
 
 const API_KEY = process.env.YOUTUBE_API_KEY;
 if (!API_KEY) {
@@ -142,13 +143,37 @@ class YoutubeMusicServer {
                 if (searchResults.length > 0) {
                     const topResultVideoId = searchResults[0].videoId;
                     const youtubeMusicUrl = `https://music.youtube.com/watch?v=${topResultVideoId}`;
-                    const appleScript = `
-                        tell application "Google Chrome"
-                            activate
-                            open location "${youtubeMusicUrl}"
-                        end tell
-                    `;
-                    exec(`osascript -e '${appleScript}'`, (error: ExecException | null, stdout: string, stderr: string) => {
+                    
+                    // Get platform-specific command
+                    const platform = os.platform();
+                    let command: string;
+                    
+                    if (platform === 'darwin') {
+                        // macOS
+                        const appleScript = `
+                            tell application "Google Chrome"
+                                activate
+                                open location "${youtubeMusicUrl}"
+                            end tell
+                        `;
+                        command = `osascript -e '${appleScript}'`;
+                    } else if (platform === 'win32') {
+                        // Windows
+                        command = `start chrome "${youtubeMusicUrl}"`;
+                    } else {
+                        // Linux or other platforms
+                        this.log.push(`Platform ${platform} not supported yet`);
+                        return {
+                            content: [
+                                {
+                                    type: 'text',
+                                    text: `Found song: ${searchResults[0].title}, but auto-opening Chrome is not supported on ${platform}. Please visit: ${youtubeMusicUrl}`
+                                }
+                            ]
+                        };
+                    }
+                    
+                    exec(command, (error: ExecException | null, stdout: string, stderr: string) => {
                         if (error) {
                             this.log.push(`Error opening song in Chrome: ${error.message}`);
                             throw new McpError(
